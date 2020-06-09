@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -8,6 +9,7 @@ const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan("dev"));
+app.use(cookieParser());
 
 
 
@@ -79,6 +81,13 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect("/urls");
 }
 );
+app.post("/login",(req,res) => {
+  const userName = req.body.username;
+  res.cookie("username",userName);
+  res.redirect("/urls");
+});
+
+
 
 
 
