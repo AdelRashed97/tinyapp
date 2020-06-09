@@ -33,32 +33,53 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-app.get("/urls/:shortURL", (req, res) => {
+app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 }
 );
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
+app.get("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[req.params.shortURL];
+  let templateVars = { shortURL, longURL };
+  res.render("url_show",templateVars);
+}
+);
+
+app.get("/urls/:shortURL/edit", (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[req.params.shortURL];
+  let templateVars = { shortURL, longURL };
+  res.render("url_show",templateVars);
+}
+);
+
 /*********************************************************************************************** */
-//Post Requests
+//Post Request to create new short url
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
-  // let templateVars = { shortURL, longURL: urlDatabase[shortURL] };
-  // res.render("url_show", templateVars);
   res.redirect(`/urls/${shortURL}`);
 
 });
 
+//Post Request to delete new short url
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   delete urlDatabase[shortURL];
   res.redirect("/urls");
 }
 );
+
+//Post Request to update new short url
+app.post("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect("/urls");
+}
+);
+
 
 
 app.listen(PORT, () => {
