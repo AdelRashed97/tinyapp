@@ -36,6 +36,8 @@ app.get("/hello", (req, res) => {
 /*********************************************************************************************** */
 //Post Requests
 app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
   console.log(req.body);  // Log the POST request body to the console
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
