@@ -27,12 +27,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { username:req.cookies["username"],urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  let templateVars = {username:req.cookies["username"]};
+  res.render("urls_new",templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -44,7 +45,7 @@ app.get("/u/:shortURL", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL];
-  let templateVars = { shortURL, longURL };
+  let templateVars = { username:req.cookies["username"],shortURL, longURL };
   res.render("url_show",templateVars);
 }
 );
@@ -52,7 +53,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL];
-  let templateVars = { shortURL, longURL };
+  let templateVars = { username:req.cookies["username"],shortURL, longURL };
   res.render("url_show",templateVars);
 }
 );
@@ -103,3 +104,4 @@ const generateRandomString = function() {
   }
   return result;
 };
+
