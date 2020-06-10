@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const {generateRandomString} = require("./generateRandomString");
 const {findUserByEmail} = require("./findUserByEmail");
+const {authenticateUser} = require("./authenticateUser");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -34,6 +35,10 @@ app.get("/", (req, res) => {
 app.get("/register",(req,res) => {
   res.render("register");
 });
+
+app.get("/login",(req,res) => {
+  res.render("login");
+})
 
 app.get("/urls", (req, res) => {
   let templateVars = { user:users[req.cookies["user_id"]],urls: urlDatabase };
@@ -68,39 +73,6 @@ app.get("/urls/:shortURL/edit", (req, res) => {
 );
 
 /*********************************************************************************************** */
-//Post Request to create new short url
-app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
-
-});
-
-//Post Request to delete new short url
-app.post("/urls/:shortURL/delete", (req, res) => {
-  const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
-}
-);
-
-//Post Request to update new short url
-app.post("/urls/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect("/urls");
-}
-);
-app.post("/login",(req,res) => {
-  const userName = req.body.username;
-  //res.cookie("username",userName);
-  res.redirect("/urls");
-});
-
-app.post("/logout",(req,res) => {
-  res.clearCookie("user_id");
-  res.redirect("/urls");
-});
 
 app.post("/register",(req,res) => {
   const email = req.body.email;
@@ -124,7 +96,57 @@ app.post("/register",(req,res) => {
     res.redirect("/urls");
   }
 
+
+
 });
+
+
+app.post("/login",(req,res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = authenticateUser(email,password,users);
+  if (user) {
+    res.cookie("user_id",user.id);
+    res.redirect("/urls");
+  } else {
+    res.status(400);
+    res.send("Error !!! Either the email or password is wrong. Please try again");
+  }
+});
+
+app.post("/logout",(req,res) => {
+  res.clearCookie("user_id");
+  res.redirect("/urls");
+});
+
+
+
+//Post Request to create new short url
+app.post("/urls", (req, res) => {
+  const shortURL = generateRandomString();
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect(`/urls/${shortURL}`);
+
+});
+
+//Post Request to delete new short url
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
+  res.redirect("/urls");
+}
+);
+
+//Post Request to update new short url
+app.post("/urls/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect("/urls");
+}
+);
+
+
+
 
 
 
