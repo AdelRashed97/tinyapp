@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const {generateRandomString} = require("./generateRandomString");
+const {findUserByEmail} = require("./findUserByEmail");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -107,16 +108,21 @@ app.post("/register",(req,res) => {
   if (email === "" || password === "") {
     res.status(400);
     res.send("Please input a valid email and password");
+  } else if (findUserByEmail(email,users)) {
+  
+    //checks if email is already used by another user.
+    res.status(400);
+    res.send("The email address is not available.Please input a different  email.");
+
+  } else {
+    
+    const userID = generateRandomString();
+    const newUser = {"id":userID,email,password};
+    users[userID] = newUser;
+    console.log(users);
+    res.cookie("user_id",userID);
+    res.redirect("/urls");
   }
-  const userID = generateRandomString();
-  const newUser = {"id":userID,email,password};
-  users[userID] = newUser;
-  console.log(users);
-  res.cookie("user_id",userID);
-  res.redirect("/urls");
-
-
-
 
 });
 
