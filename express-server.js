@@ -33,11 +33,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register",(req,res) => {
-  res.render("register");
+  let templateVars = { user:users[req.cookies["user_id"]] };
+  res.render("register",templateVars);
 });
 
 app.get("/login",(req,res) => {
-  res.render("login");
+  let templateVars = { user:users[req.cookies["user_id"]] };
+  res.render("login",templateVars);
 })
 
 app.get("/urls", (req, res) => {
@@ -78,12 +80,12 @@ app.post("/register",(req,res) => {
   const email = req.body.email;
   const password = req.body.password;
   if (email === "" || password === "") {
-    res.status(400);
+    res.status(403);
     res.send("Please input a valid email and password");
   } else if (findUserByEmail(email,users)) {
   
     //checks if email is already used by another user.
-    res.status(400);
+    res.status(403);
     res.send("The email address is not available.Please input a different  email.");
 
   } else {
