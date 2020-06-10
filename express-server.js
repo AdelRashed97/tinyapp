@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const {generateRandomString} = require("./generateRandomString");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -107,12 +108,5 @@ app.listen(PORT, () => {
 
 
 
-const generateRandomString = function() {
-  let result = '';
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  for (let i = 0; i < 6; i++) {
-    result += characters.charAt(Math.floor(Math.random() * 6));
-  }
-  return result;
-};
+
 
