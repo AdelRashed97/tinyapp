@@ -16,11 +16,13 @@ app.use(cookieParser());
 
 
 
-/************************************************************************************* */
+// Databases
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = {};
 
 // Get Requests
 app.get("/", (req, res) => {
@@ -97,6 +99,21 @@ app.post("/login",(req,res) => {
 app.post("/logout",(req,res) => {
   res.clearCookie("username");
   res.redirect("/urls");
+});
+
+app.post("/register",(req,res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const userID = generateRandomString();
+  const newUser = {"id":userID,email,password};
+  users[userID] = newUser;
+  console.log(users);
+  res.cookie("user_id",userID);
+  res.redirect("/urls");
+
+
+
+
 });
 
 
