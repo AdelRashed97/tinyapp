@@ -104,6 +104,10 @@ app.post("/logout",(req,res) => {
 app.post("/register",(req,res) => {
   const email = req.body.email;
   const password = req.body.password;
+  if (email === "" || password === "") {
+    res.status(400);
+    res.send("Please input a valid email and password");
+  }
   const userID = generateRandomString();
   const newUser = {"id":userID,email,password};
   users[userID] = newUser;
