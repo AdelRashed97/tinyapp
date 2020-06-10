@@ -12,12 +12,20 @@
     </div>
     <!--if username is not set, display an input bar and login button,else display username and logout button-->
     <% if (!user){ %>
-    <form class="form-inline" action="/login" method="POST">
+    <form class="form-inline" action="/login" method="GET">
       <div class="form-group mb-2">
-        <input class="form-control" type="text" name="username" placeholder="Username" style="width: 300px; margin: 1em">
+       
         <button type="submit" class="btn btn-success btn-outline-dark">Login</button>
       </div>
     </form>
+    <form class="form-inline" action="/register" method="GET" >
+      <div class="form-group mb-2">
+       
+        <button type="submit" class="btn btn-success btn-outline-dark" style="margin-left: 1em">Register</button>
+      </div>
+    </form>
+
+    
       <% } else { %>
     <form class="form-inline" action="/logout" method="POST">
         <div class="form-group mb-2">
