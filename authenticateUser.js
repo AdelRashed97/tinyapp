@@ -10,4 +10,6 @@ const authenticateUser = function(email,password,users) {
 
   return false;
 
-}
+};
+
+module.exports = {authenticateUser};
