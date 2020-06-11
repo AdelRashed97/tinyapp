@@ -20,11 +20,22 @@ app.use(cookieParser());
 
 // Databases
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {longURL:"http://www.lighthouselabs.ca",userID:"DDEEFF"},
+  "9sm5xK": {longURL :"http://www.google.com", userID:"AABBCC"}
 };
 
-const users = {};
+const users = {"AABBCC":{
+  id:"AABBCC",
+  email:"mike@example.ca",
+  password:"12345"
+},
+"DDEEFF": {
+  id : "DDEEFF",
+  email :"sara@example.ca",
+  password : "98765"
+}
+
+};
 
 // Get Requests
 app.get("/", (req, res) => {
@@ -131,8 +142,10 @@ app.post("/logout",(req,res) => {
 
 //Post Request to create new short url
 app.post("/urls", (req, res) => {
+  const userID = req.cookies["user_id"];
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL] = {longURL:req.body.longURL, userID};
+  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 
 });
