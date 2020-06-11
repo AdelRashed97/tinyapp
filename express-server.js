@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const bycrpt = require("bcrypt");
+const cookieSession = require("cookie-session");
 const {generateRandomString} = require("./generateRandomString");
 const {findUserByEmail} = require("./findUserByEmail");
 const {authenticateUser} = require("./authenticateUser");
@@ -14,8 +15,11 @@ const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(morgan("dev"));
-app.use(cookieParser());
 
+app.use(cookieSession({
+  name: 'session',
+  keys: ['f080ac7b-b838-4c5f-a1f4-b0a9fee10130', 'c3fb18be-448b-4f6e-a377-49373e9b7e1a']
+}));
 
 
 
@@ -41,7 +45,7 @@ const users = {"AABBCC":{
 
 // Get Requests
 app.get("/", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   if (userID) {
     res.redirect("/urls");
   } {
@@ -51,7 +55,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register",(req,res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   if (userID) {
     // check if user is logged in
     res.redirect("/urls");
@@ -65,7 +69,7 @@ app.get("/register",(req,res) => {
 
 app.get("/login",(req,res) => {
 
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   if (userID) {
     // check if user is logged in
     res.redirect("/urls");
@@ -77,7 +81,7 @@ app.get("/login",(req,res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   if (userID) {
     // check if the user is logged in
     
@@ -91,7 +95,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   if (userID) {
     // check if the user is logged in
     let templateVars = {user:users[userID]};
@@ -122,7 +126,7 @@ app.get("/u/:shortURL", (req, res) => {
 );
 
 app.get("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
   if (userID) {
@@ -153,11 +157,6 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 }
 
-
-
-
-
-
 );
 
 
@@ -182,7 +181,7 @@ app.post("/register",(req,res) => {
     const newUser = {"id":userID,email,password:bycrpt.hashSync(password,10)};
     users[userID] = newUser;
     console.log(users);
-    res.cookie("user_id",userID);
+    req.session["user_id"] = userID;
     res.redirect("/urls");
   }
 
@@ -196,7 +195,7 @@ app.post("/login",(req,res) => {
   const password = req.body.password;
   const user = authenticateUser(email,password,users);
   if (user) {
-    res.cookie("user_id",user.id);
+    req.session["user_id"] = user["id"];
     res.redirect("/urls");
   } else {
     res.status(403);
@@ -205,7 +204,7 @@ app.post("/login",(req,res) => {
 });
 
 app.post("/logout",(req,res) => {
-  res.clearCookie("user_id");
+  req.session["user_id"] = null;
   res.redirect("/urls");
 });
 
@@ -213,7 +212,7 @@ app.post("/logout",(req,res) => {
 
 //Post Request to create new short url
 app.post("/urls", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   if (userID) {
     //check if the user is logged in
     const shortURL = generateRandomString();
@@ -233,7 +232,7 @@ app.post("/urls", (req, res) => {
 
 //Post Request to delete new short url
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
   if (userID) {
@@ -277,7 +276,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 //Post Request to update new short url
 app.post("/urls/:shortURL", (req, res) => {
-  const userID = req.cookies["user_id"];
+  const userID = req.session["user_id"];
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
   if (userID) {
