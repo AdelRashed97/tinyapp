@@ -40,7 +40,7 @@ app.get("/register",(req,res) => {
 app.get("/login",(req,res) => {
   let templateVars = { user:users[req.cookies["user_id"]] };
   res.render("login",templateVars);
-})
+});
 
 app.get("/urls", (req, res) => {
   let templateVars = { user:users[req.cookies["user_id"]],urls: urlDatabase };
@@ -48,8 +48,14 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {user:users[req.cookies["user_id"]]};
-  res.render("urls_new",templateVars);
+  const userID = req.cookies["user_id"];
+  if (userID) {
+    let templateVars = {user:users[userID]};
+    res.render("urls_new",templateVars);
+
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -80,12 +86,12 @@ app.post("/register",(req,res) => {
   const email = req.body.email;
   const password = req.body.password;
   if (email === "" || password === "") {
-    res.status(403);
+    res.status(400);
     res.send("Please input a valid email and password");
   } else if (findUserByEmail(email,users)) {
   
     //checks if email is already used by another user.
-    res.status(403);
+    res.status(400);
     res.send("The email address is not available.Please input a different  email.");
 
   } else {
@@ -111,7 +117,7 @@ app.post("/login",(req,res) => {
     res.cookie("user_id",user.id);
     res.redirect("/urls");
   } else {
-    res.status(400);
+    res.status(403);
     res.send("Error !!! Either the email or password is wrong. Please try again");
   }
 });
