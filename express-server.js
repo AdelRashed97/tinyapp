@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const bycrpt = require("bcrypt");
 const {generateRandomString} = require("./generateRandomString");
 const {findUserByEmail} = require("./findUserByEmail");
 const {authenticateUser} = require("./authenticateUser");
@@ -28,12 +29,12 @@ const urlDatabase = {
 const users = {"AABBCC":{
   id:"AABBCC",
   email:"mike@example.ca",
-  password:"12345"
+  password:bycrpt.hashSync("12345",10)
 },
 "DDEEFF": {
   id : "DDEEFF",
   email :"sara@example.ca",
-  password : "98765"
+  password : bycrpt.hashSync("98765",10)
 }
 
 };
@@ -178,7 +179,7 @@ app.post("/register",(req,res) => {
   } else {
     
     const userID = generateRandomString();
-    const newUser = {"id":userID,email,password};
+    const newUser = {"id":userID,email,password:bycrpt.hashSync(password,10)};
     users[userID] = newUser;
     console.log(users);
     res.cookie("user_id",userID);
