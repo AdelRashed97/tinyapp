@@ -40,7 +40,12 @@ const users = {"AABBCC":{
 
 // Get Requests
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  const userID = req.cookies["user_id"];
+  if (userID) {
+    res.redirect("/urls");
+  } {
+    res.redirect("/login");
+  }
 
 });
 
