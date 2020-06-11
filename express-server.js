@@ -56,9 +56,15 @@ app.get("/login",(req,res) => {
 
 app.get("/urls", (req, res) => {
   const userID = req.cookies["user_id"];
-  const userUrls = urlsForUser(userID,urlDatabase);
-  let templateVars = { user:users[userID],urls:userUrls };
-  res.render("urls_index", templateVars);
+  if (userID) {
+    
+    const userUrls = urlsForUser(userID,urlDatabase);
+    let templateVars = { user:users[userID],urls:userUrls };
+    res.render("urls_index", templateVars);
+  } else {
+    res.status(403);
+    res.send('<p> Access Denied. Either <a href ="/login">Login</a> or <a href ="/register">Register</a> </p>');
+  }
 });
 
 app.get("/urls/new", (req, res) => {
