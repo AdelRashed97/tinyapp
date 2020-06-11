@@ -85,11 +85,42 @@ app.get("/u/:shortURL", (req, res) => {
 );
 
 app.get("/urls/:shortURL", (req, res) => {
+  const userID = req.cookies["user_id"];
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  let templateVars = { user:users[req.cookies["user_id"]],shortURL, longURL };
-  res.render("url_show",templateVars);
+  const url = urlDatabase[shortURL];
+  if (userID) {
+    // check if the user is logged in
+    if (url) {
+      // check if the url exists
+      if (url["userID"] === userID) {
+        // check if the current user is the owner/creator of the url
+        let templateVars = { user:users[userID],shortURL, longURL: url["longURL"] };
+        res.render("url_show",templateVars);
+ 
+      } else {
+        // if the current user is not the creator of url
+        res.status(403);
+        res.send("Access Denied. The requested url belongs to another account");
+      }
+  
+    } else {
+      // the url does not exist in the database
+      res.status(400);
+      res.send("The url requested does not exist");
+    }
+      
+  } else {
+    // user is not logged in
+    res.status(403);
+    res.send('<p> Access Denied. Either <a href ="/login">Login</a> or <a href ="/register">Register</a> </p>');
+  }
 }
+
+
+
+
+
+
 );
 
 
