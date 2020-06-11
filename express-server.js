@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const {generateRandomString} = require("./generateRandomString");
 const {findUserByEmail} = require("./findUserByEmail");
 const {authenticateUser} = require("./authenticateUser");
+const {urlsForUser} = require("./urlsForUser");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -54,7 +55,9 @@ app.get("/login",(req,res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { user:users[req.cookies["user_id"]],urls: urlDatabase };
+  const userID = req.cookies["user_id"];
+  const userUrls = urlsForUser(userID,urlDatabase);
+  let templateVars = { user:users[userID],urls:userUrls };
   res.render("urls_index", templateVars);
 });
 
