@@ -45,8 +45,16 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register",(req,res) => {
-  let templateVars = { user:users[req.cookies["user_id"]] };
-  res.render("register",templateVars);
+  const userID = req.cookies["user_id"];
+  if (userID) {
+    // check if user is logged in
+    res.redirect("/urls");
+  } else {
+    
+    let templateVars = { user:users[userID] };
+    res.render("register",templateVars);
+  }
+
 });
 
 app.get("/login",(req,res) => {
