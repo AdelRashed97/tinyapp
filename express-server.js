@@ -57,6 +57,7 @@ app.get("/login",(req,res) => {
 app.get("/urls", (req, res) => {
   const userID = req.cookies["user_id"];
   if (userID) {
+    // check if the user is logged in
     
     const userUrls = urlsForUser(userID,urlDatabase);
     let templateVars = { user:users[userID],urls:userUrls };
@@ -70,6 +71,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const userID = req.cookies["user_id"];
   if (userID) {
+    // check if the user is logged in
     let templateVars = {user:users[userID]};
     res.render("urls_new",templateVars);
 
@@ -163,7 +165,7 @@ app.post("/login",(req,res) => {
     res.redirect("/urls");
   } else {
     res.status(403);
-    res.send("Error !!! Either the email or password is wrong. Please try again");
+    res.send('Error !!! Either the email or password is wrong. Please try again <a href ="/login">Login</a>');
   }
 });
 
@@ -177,23 +179,25 @@ app.post("/logout",(req,res) => {
 //Post Request to create new short url
 app.post("/urls", (req, res) => {
   const userID = req.cookies["user_id"];
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = {longURL:req.body.longURL, userID};
-  console.log(urlDatabase);
-  res.redirect(`/urls/${shortURL}`);
+  if (userID) {
+    //check if the user is logged in
+    const shortURL = generateRandomString();
+    urlDatabase[shortURL] = {longURL:req.body.longURL, userID};
+    console.log(urlDatabase);
+    res.redirect(`/urls/${shortURL}`);
+ 
+  } else {
+
+    // user is not logged in
+    res.status(403);
+    res.send('<p> Access Denied. Either <a href ="/login">Login</a> or <a href ="/register">Register</a> </p>');
+
+  }
 
 });
 
 //Post Request to delete new short url
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls");
-}
-);
-
-//Post Request to update new short url
-app.post("/urls/:shortURL", (req, res) => {
   const userID = req.cookies["user_id"];
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
@@ -204,10 +208,9 @@ app.post("/urls/:shortURL", (req, res) => {
       if (url["userID"] === userID) {
         // check if the current user is the owner/creator of the url
 
-        // updates the url
+        // deletes the url
 
-        urlDatabase[shortURL][longURL] = req.body.longURL;
-
+        delete urlDatabase[shortURL];
         res.redirect("/urls");
  
       } else {
@@ -232,13 +235,48 @@ app.post("/urls/:shortURL", (req, res) => {
 
 
 
+);
 
 
 
 
+//Post Request to update new short url
+app.post("/urls/:shortURL", (req, res) => {
+  const userID = req.cookies["user_id"];
+  const shortURL = req.params.shortURL;
+  const url = urlDatabase[shortURL];
+  if (userID) {
+    // check if the user is logged in
+    if (url) {
+      // check if the url exists
+      if (url["userID"] === userID) {
+        // check if the current user is the owner/creator of the url
 
+        // updates the url
 
+        urlDatabase[shortURL]["longURL"] = req.body.longURL;
+
+        res.redirect("/urls");
+ 
+      } else {
+        // if the current user is not the creator of url
+        res.status(403);
+        res.send("Access Denied. The requested url belongs to another account");
+      }
+  
+    } else {
+      // the url does not exist in the database
+      res.status(400);
+      res.send("The url requested does not exist");
+    }
+      
+  } else {
+    // user is not logged in
+    res.status(403);
+    res.send('<p> Access Denied. Either <a href ="/login">Login</a> or <a href ="/register">Register</a> </p>');
+  }
 }
+
 );
 
 
