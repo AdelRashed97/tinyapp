@@ -92,13 +92,7 @@ app.get("/urls/:shortURL", (req, res) => {
 }
 );
 
-app.get("/urls/:shortURL/edit", (req, res) => {
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL].longURL;
-  let templateVars = { user:users[req.cookies["user_id"]],shortURL, longURL };
-  res.render("url_show",templateVars);
-}
-);
+
 
 /*********************************************************************************************** */
 
