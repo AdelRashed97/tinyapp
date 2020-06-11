@@ -70,14 +70,14 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 }
 );
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   let templateVars = { user:users[req.cookies["user_id"]],shortURL, longURL };
   res.render("url_show",templateVars);
 }
@@ -85,7 +85,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/urls/:shortURL/edit", (req, res) => {
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   let templateVars = { user:users[req.cookies["user_id"]],shortURL, longURL };
   res.render("url_show",templateVars);
 }
