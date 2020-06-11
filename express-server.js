@@ -58,7 +58,7 @@ app.get("/register",(req,res) => {
 });
 
 app.get("/login",(req,res) => {
-  
+
   const userID = req.cookies["user_id"];
   if (userID) {
     // check if user is logged in
@@ -97,8 +97,21 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+  const shortURL = req.params.shortURL;
+  const url = urlDatabase[shortURL];
+  if (url) {
+    //checks if the url object exist
+    const longURL = url.longURL;
+    res.redirect(longURL);
+
+  } else {
+
+    // the url does not exist in the database
+    res.status(400);
+    res.send("The url requested does not exist");
+
+  }
+
 }
 );
 
