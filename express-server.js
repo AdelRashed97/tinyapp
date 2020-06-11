@@ -1,7 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
 const bycrpt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const {generateRandomString} = require("./generateRandomString");
