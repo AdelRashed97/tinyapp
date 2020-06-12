@@ -106,6 +106,7 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+// Get request to long url domain using the short url.
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
@@ -125,6 +126,7 @@ app.get("/u/:shortURL", (req, res) => {
 }
 );
 
+// Get request to view urls/:shortUrl page
 app.get("/urls/:shortURL", (req, res) => {
   const userID = req.session["user_id"];
   const shortURL = req.params.shortURL;
@@ -162,7 +164,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 
 /*********************************************************************************************** */
-
+// Post request to register
 app.post("/register",(req,res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -188,7 +190,7 @@ app.post("/register",(req,res) => {
 
 });
 
-
+// Post request to login
 app.post("/login",(req,res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -202,6 +204,7 @@ app.post("/login",(req,res) => {
   }
 });
 
+// Post request to logout
 app.post("/logout",(req,res) => {
   req.session["user_id"] = null;
   res.redirect("/urls");
