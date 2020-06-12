@@ -179,7 +179,6 @@ app.post("/register",(req,res) => {
     const userID = generateRandomString();
     const newUser = {"id":userID,email,password:bcrypt.hashSync(password,10)};
     users[userID] = newUser;
-    console.log(users);
     req.session["user_id"] = userID;
     res.redirect("/urls");
   }
@@ -216,7 +215,6 @@ app.post("/urls", (req, res) => {
     //check if the user is logged in
     const shortURL = generateRandomString();
     urlDatabase[shortURL] = {longURL:req.body.longURL, userID};
-    console.log(urlDatabase);
     res.redirect(`/urls/${shortURL}`);
  
   } else {
